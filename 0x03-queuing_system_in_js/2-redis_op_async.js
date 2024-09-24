@@ -10,19 +10,6 @@ client.on('error', (err) => {
 	console.log('Redis client not connected to the server:', err.toString());
 });
 
-// Handle successful connection
-client.on('connect', () => {
-	console.log('Redis client connected to the server');
-
-	// Call the functions here once the client is connected
-	displaySchoolValue('Holberton');
-	setNewSchool('HolbertonSanFrancisco', '100');
-	displaySchoolValue('HolbertonSanFrancisco');
-});
-
-// Promisfy the get method
-const getAsync = promisify(client.get).bind(client);
-
 // Function to set a new school
 const setNewSchool = (schoolName, value) => {
 	client.set(schoolName, value, (err, reply) => {
@@ -37,13 +24,20 @@ const setNewSchool = (schoolName, value) => {
 // Function to display the value of a school
 const displaySchoolValue = async (schoolName) => {
 	try {
-		const reply = await getAsync(schoolName);
-		console.log(reply);
+		const value = await promisify(client.get).bind(client)(schoolName);
+		console.log(value);
 	} catch (err) {
 		console.log('Error retrieviing value:', err);
 	}
 };
 
+async function main() {
+	await displaySchoolValue('Holberton');
+	setNewSchool('HolbertonSanFrancisco', '100');
+	await displaySchoolValue('HolbertonSanFrancisco');
+}
 
-// OOptional: Quit the client if you want to close the connection
-// client.quit();
+client.on('connect', async () => {
+	console.log('Redis client connected to the server');
+	await main();
+});
