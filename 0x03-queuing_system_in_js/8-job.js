@@ -7,7 +7,7 @@ import kue from 'kue';
  * @param {Queue} queue - Kue queue instance.
  */
 
-const createPushNotificationsJobs = (jobs, queue) => {
+export default function createPushNotificationsJobs = (jobs, queue) => {
 	if (!Array.isArray(jobs)) {
 		throw new Error('Jobs is not an array');
 	}
@@ -36,6 +36,4 @@ const createPushNotificationsJobs = (jobs, queue) => {
 		// Save the job to the queue
 		job.save();
 	}
-};
-
-export default createPushNotificationsJobs;
+}
